@@ -1,0 +1,14 @@
+.common-title {
+    font-size: 14px;
+    font-weight: bold;
+    padding-bottom: 15px;
+}
+.common-title::before {
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    width: 4px;
+    height: 14px;
+    background-color: #2d8cf0;
+    margin-right: 5px;
+}
