@@ -24,27 +24,71 @@ export interface IfOptions {
 
 export interface Enum {
     label: string
-    value: number
+    value: any
 }
 
+export interface Variable extends Enum {
+    label: string
+    value: string
+    children?: Array<Variable>
+}
 
-export interface Condition {
+export interface Constant extends Enum {
+    label: string
+    key: string
+    value: Array<Variable>
+}
+
+/**
+ * 函数参数
+ */
+export interface FunctionParams {
+    name: string
+    key: string
+}
+
+/**
+ * 函数名，如自定义日期
+ */
+export interface FunctionData {
+    name: string
+    key: string
+    parmas: Array<FunctionParams>
+}
+
+/**
+ * 函数类型名，如日期等
+ */
+export interface FunctionType extends Enum {
+    label: string
+    key: string
+    value: Array<FunctionData>
+}
+
+// 级联数据格式
+export interface CascaderItem extends Enum {
+    label: string
+    value: any
+    children?: Array<CascaderItem>
+}
+
+export class Condition {
     // 级联输入绑定的值
-    modelValue: any,
+    value: Array<string>
     // 值类型
-    type: number | null
+    type: number
     // 输入值
     inputValue?: string
     // 输入变量
-    inputVariable?: Array<string>
+    inputVariable?: Variable
     // 输入常量
-    inputConstant?: Array<string>
+    inputConstant?: Constant
     // 输入函数
-    inputFunction?: Array<string>
+    inputFunction?: FunctionData
     // 输入函数参数
-    inputFunctionParams?: Array<FunctionParams>
+    inputFunctionParams?: Array<Condition>
     // 操作符
-    operationSymbol?: number
+    operationSymbol?: string
     // 输出值
     outputValue?: string
     // 输出变量
@@ -53,16 +97,16 @@ export interface Condition {
     outputConstant?: Array<string>
     // 输出函数
     outputFunction?: Array<string>
+    // 输出函数参数
+    outputFunctionParams?: Array<Condition>
+
+    constructor(value = [], type = 0) {
+        this.value = value
+        this.type = type
+    }
 }
 
-export interface FunctionParams extends Condition{
-    // 字段名称
-    name?: string
-}
-
-// 级联数据格式
-export interface CascaderData {
-    label: string,
-    value: string,
-    children?: Array<CascaderData>
-}
+// export interface FunctionParams extends Condition {
+//     // 字段名称
+//     name?: string
+// }

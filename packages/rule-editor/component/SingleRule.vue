@@ -27,8 +27,8 @@
                 <div class="condition-container">
                     <div v-if="conditions.length > 1" class="condition-border-left"></div>
                     <div class="condition-content">
-                        <div class="condition" v-for="item in conditions">
-                            <Cascader :data="CascaderData" v-model="item.modelValue" v-width="200" />
+                        <div class="condition" v-for="(item, index) in conditions">
+                            <ConditionComponent v-model="conditions[index]" @delete="conditions.splice(index, 1)"></ConditionComponent>
                         </div>
                     </div>
                 </div>
@@ -37,14 +37,19 @@
     </div>
 </template>
 <script lang="ts" setup>
+import ConditionComponent from './ConditionComponent.vue'
 import { type Ref, ref, type PropType } from 'vue'
 import { getLabelFromEnum } from '../utils/index'
-import { type SingleRuleData, type IfOptions, type Condition, type CascaderData } from '../types/index'
+import {
+    type SingleRuleData,
+    type IfOptions,
+    Condition,
+} from '../types/index'
 
 import { IfData } from '../constant/mockdata'
 
 // 事件定义
-const emits = defineEmits(["on-delete"]);
+const emits = defineEmits(['on-delete'])
 
 // 定义Props
 const props = defineProps({
@@ -62,18 +67,12 @@ const props = defineProps({
 // 定义Data
 let data: Ref<SingleRuleData> = ref(props.modelValue)
 
-// 级联数据源
-const CascaderData: CascaderData = {
-    label: "",
-    value: ""
-};
-
 // 将JSON中的数据转化为固定选项
 let ifOptions: IfOptions[] = IfData.map((item) => {
     return {
         label: item.label,
         handleClick: () => {
-            data.value.ifData.keyword = item.value
+            data.value.ifData.keyword = item.value as number
         }
     }
 })
@@ -95,11 +94,11 @@ ifOptions = ifOptions.concat(CONDITION)
 // 是否是根节点
 if (!props.isRoot) {
     ifOptions.push({
-        label: "删除",
+        label: '删除',
         handleClick: () => {
-            emits("on-delete")
+            emits('on-delete')
         }
-    });
+    })
 }
 
 // 条件
@@ -107,10 +106,7 @@ let conditions: Ref<Condition[]> = ref([])
 
 // 添加条件
 function addCondition() {
-    conditions.value.push({
-        modelValue: null,
-        type: null
-    })
+    conditions.value.push(new Condition())
 }
 // 添加联合条件
 function addUnionCondition() {}
@@ -125,12 +121,16 @@ function addUnionCondition() {}
     align-items: normal;
 }
 .line {
-    margin-top: 13px;
+    margin-top: 15px;
     width: 16px;
     height: 1px;
     background-color: #c9c9c9;
 }
 .condition-container {
+    display: flex;
+    align-items: center;
+}
+.condition-content .condition {
     display: flex;
     align-items: center;
 }
@@ -141,12 +141,11 @@ function addUnionCondition() {}
     height: 1px;
     background-color: #c9c9c9;
     position: relative;
-    top: -6px;
 }
 .condition-border-left {
     height: calc(100% - 24px);
     width: 1px;
     background-color: #c9c9c9;
-    margin-top: -4px;
+    margin-top: -1px;
 }
 </style>
